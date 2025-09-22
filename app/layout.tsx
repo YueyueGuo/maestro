@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import MobileNav from "@/components/MobileNav";
@@ -12,8 +12,13 @@ export const metadata: Metadata = {
   title: "Maestro - AI-Powered Macro Tracker",
   description: "Track your macronutrients with AI-powered food recognition, barcode scanning, and nutrition facts OCR",
   manifest: "/manifest.json",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
   themeColor: "#2563eb",
-  viewport: "width=device-width, initial-scale=1, viewport-fit=cover",
 };
 
 export default function RootLayout({

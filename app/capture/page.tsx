@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, Camera, Image as ImageIcon, Scan, CheckCircle } from 'lucide-react'
 import CameraInterface from './components/CameraInterface'
@@ -29,10 +29,18 @@ export default function CapturePage() {
   }
 
   /**
-   * Handle capture errors
+   * Handle capture errors from error boundary
    */
-  const handleCaptureError = (error: string) => {
-    debugLog('Capture error', error)
+  const handleCaptureError = (error: Error, errorInfo: React.ErrorInfo) => {
+    debugLog('Capture error', { error: error.message, errorInfo })
+    // Error handling is done within the CameraInterface component
+  }
+
+  /**
+   * Handle camera interface errors (string format)
+   */
+  const handleCameraError = (error: string) => {
+    debugLog('Camera interface error', error)
     // Error handling is done within the CameraInterface component
   }
 
@@ -73,7 +81,7 @@ export default function CapturePage() {
               <CameraInterface
                 onBarcodeSuccess={handleBarcodeSuccess}
                 onModeChange={handleModeChange}
-                onError={handleCaptureError}
+                onError={handleCameraError}
                 className="h-96"
               />
             </CameraErrorBoundary>

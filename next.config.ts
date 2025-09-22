@@ -4,6 +4,9 @@ const withPWA = require('next-pwa');
 
 const nextConfig: NextConfig = {
   /* config options here */
+  // Fix workspace root warning
+  outputFileTracingRoot: __dirname,
+
   images: {
     remotePatterns: [
       {

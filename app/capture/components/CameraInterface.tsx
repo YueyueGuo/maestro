@@ -7,7 +7,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { Camera, Scan, FileImage, Zap, ZapOff, RotateCcw, AlertCircle } from 'lucide-react'
-import { useCapture } from '../../../hooks/useCapture'
+import { useCapture, type ExtendedCaptureHook } from '../../../hooks/useCapture'
 import { debugLog } from '../../../lib/debug'
 
 export interface CameraInterfaceProps {
@@ -27,7 +27,7 @@ export default function CameraInterface({
   const [torchEnabled, setTorchEnabled] = useState(false)
   const [showInstructions, setShowInstructions] = useState(true)
 
-  const capture = useCapture({
+  const capture: ExtendedCaptureHook = useCapture({
     autoDetectionTimeoutMs: 3000,
     onBarcodeDetected: (result) => {
       debugLog('Barcode detected in UI', result)
@@ -48,7 +48,7 @@ export default function CameraInterface({
     if (videoRef.current && capture.stream) {
       capture.setupVideoElement(videoRef.current)
     }
-  }, [capture.stream, capture.setupVideoElement])
+  }, [capture.stream, capture.setupVideoElement]) // eslint-disable-line react-hooks/exhaustive-deps
 
   /**
    * Auto-start capture on mount

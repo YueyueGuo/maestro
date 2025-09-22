@@ -126,7 +126,7 @@ export function useBarcodeDetection(
       try {
         updateState({ isScanning: true, error: null })
 
-        const result = await reader.decodeOnceFromVideoDevice(undefined, videoElement, timeoutMs)
+        const result = await reader.decodeOnceFromVideoDevice(undefined, videoElement)
 
         const barcodeResult: BarcodeResult = {
           text: result.getText(),

@@ -30,6 +30,17 @@ export interface CaptureControls {
   setupVideoElement: (element: HTMLVideoElement) => void
 }
 
+export interface ExtendedCaptureHook extends CaptureState, CaptureControls {
+  // Camera state
+  stream: MediaStream | null
+  cameraLoading: boolean
+  cameraError: any
+  hasPermission: boolean | null
+  // Additional camera controls
+  toggleTorch: (enabled: boolean) => Promise<boolean>
+  restartCamera: () => Promise<void>
+}
+
 export interface UseCaptureOptions {
   autoDetectionTimeoutMs?: number
   onBarcodeDetected?: (result: LookupResult) => void
@@ -37,7 +48,7 @@ export interface UseCaptureOptions {
   onError?: (error: string) => void
 }
 
-export function useCapture(options: UseCaptureOptions = {}): CaptureState & CaptureControls {
+export function useCapture(options: UseCaptureOptions = {}): ExtendedCaptureHook {
   const {
     autoDetectionTimeoutMs = 3000,
     onBarcodeDetected,
@@ -329,12 +340,5 @@ export function useCapture(options: UseCaptureOptions = {}): CaptureState & Capt
     // Additional camera controls
     toggleTorch: camera.toggleTorch,
     restartCamera: camera.restartCamera
-  } as CaptureState & CaptureControls & {
-    stream: MediaStream | null
-    cameraLoading: boolean
-    cameraError: any
-    hasPermission: boolean | null
-    toggleTorch: (enabled: boolean) => Promise<boolean>
-    restartCamera: () => Promise<void>
   }
 }

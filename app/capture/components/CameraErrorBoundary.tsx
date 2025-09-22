@@ -6,7 +6,7 @@
  */
 
 import React from 'react'
-import { AlertTriangle, Camera, Upload, RotateCcw } from 'lucide-react'
+import { AlertTriangle, Upload, RotateCcw } from 'lucide-react'
 import { debugLog, logError } from '../../../lib/debug'
 
 interface CameraErrorBoundaryState {

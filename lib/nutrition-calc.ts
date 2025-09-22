@@ -12,7 +12,7 @@ export interface NutritionInfo {
   fiber: number
 }
 
-export interface DailyGoals extends NutritionInfo {}
+export type DailyGoals = NutritionInfo
 
 export interface NutritionProgress {
   current: NutritionInfo

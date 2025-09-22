@@ -6,7 +6,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Camera, Home, BarChart3, Calendar, Settings } from 'lucide-react'
+import { Camera, Home, BarChart3, Calendar } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const navItems = [

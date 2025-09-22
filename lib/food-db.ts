@@ -3,14 +3,14 @@
  */
 
 import { debugLog, logError, measurePerformance } from './debug'
-import { FEATURES, MOCK_MODE } from './config'
+import { MOCK_MODE } from './config'
 import { MOCK_API_RESPONSES } from './test-data'
 
 export interface ProductData {
   name: string
   brand?: string
   barcode: string
-  source: 'barcode'
+  source: 'barcode' | 'search' | 'manual'
   nutrition: {
     calories: number
     carbs: number

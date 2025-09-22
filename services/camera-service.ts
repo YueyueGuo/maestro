@@ -212,8 +212,9 @@ export class CameraService {
     if (!videoTrack) return false
 
     try {
+      // Try torch constraint (non-standard, supported by some browsers)
       await videoTrack.applyConstraints({
-        advanced: [{ torch: enabled }]
+        advanced: [{ torch: enabled } as any]
       })
       debugLog(`Torch ${enabled ? 'enabled' : 'disabled'}`)
       return true
