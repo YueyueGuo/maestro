@@ -2,15 +2,20 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Camera, Image as ImageIcon, Scan, CheckCircle } from 'lucide-react'
+import { ArrowLeft, Camera, Image as ImageIcon, Scan } from 'lucide-react'
 import CameraInterface from './components/CameraInterface'
 import CaptureErrorBoundary from './components/CaptureErrorBoundary'
 import CameraErrorBoundary from './components/CameraErrorBoundary'
+import NutritionFactsCard from './components/NutritionFactsCard'
+import MealSelectionModal from './components/MealSelectionModal'
 import { debugLog } from '../../lib/debug'
+import { addFoodToMeal } from '../../lib/meal-storage'
 
 export default function CapturePage() {
   const [captureResult, setCaptureResult] = useState<any>(null)
   const [currentMode, setCurrentMode] = useState<string>('barcode')
+  const [showMealModal, setShowMealModal] = useState(false)
+  const [pendingProduct, setPendingProduct] = useState<any>(null)
 
   /**
    * Handle successful barcode detection
@@ -18,6 +23,45 @@ export default function CapturePage() {
   const handleBarcodeSuccess = (result: any) => {
     debugLog('Barcode capture success', result)
     setCaptureResult(result)
+  }
+
+  /**
+   * Handle nutrition facts confirmation - Open meal selection
+   */
+  const handleNutritionConfirm = (product: any, servingSize: number) => {
+    debugLog('Opening meal selection for product', { product: product.name, servingSize })
+    setPendingProduct({ ...product, servingSize })
+    setShowMealModal(true)
+  }
+
+  /**
+   * Handle actual meal addition
+   */
+  const handleMealConfirm = (mealType: string, servings: number, totalNutrition: any) => {
+    if (!pendingProduct) return
+
+    debugLog('Adding food to meal', { mealType, servings, totalNutrition })
+
+    const result = addFoodToMeal(pendingProduct, mealType as any, servings, totalNutrition)
+
+    if (result.success) {
+      // Success - show confirmation and reset
+      alert(`Successfully added ${pendingProduct.name} to ${mealType}!`)
+      resetCapture()
+      setPendingProduct(null)
+    } else {
+      // Error - show error message
+      alert(`Error adding food to meal: ${result.error}`)
+    }
+  }
+
+  /**
+   * Handle edit nutrition details
+   */
+  const handleEditDetails = () => {
+    debugLog('Edit nutrition details requested')
+    // TODO: Implement nutrition editing interface
+    alert('Nutrition editing interface coming soon!')
   }
 
   /**
@@ -50,6 +94,8 @@ export default function CapturePage() {
   const resetCapture = () => {
     setCaptureResult(null)
     setCurrentMode('barcode')
+    setShowMealModal(false)
+    setPendingProduct(null)
   }
 
   return (
@@ -72,6 +118,19 @@ export default function CapturePage() {
 
         {/* Main Content */}
         <div className="px-4 py-6">
+          {/* Barcode Scanning Tips - Above scan box for visibility */}
+          {!captureResult && (
+            <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <h3 className="font-medium text-blue-900 mb-2">📱 Barcode Scanning Tips</h3>
+              <ul className="text-sm text-blue-800 space-y-1">
+                <li>• Hold your phone steady over the barcode</li>
+                <li>• Ensure good lighting on the product</li>
+                <li>• Keep the barcode within the scanning frame</li>
+                <li>• Try different angles if scanning doesn't work</li>
+              </ul>
+            </div>
+          )}
+
           {/* Working Camera Interface with Error Boundary */}
           <div className="mb-6 camera-viewfinder">
             <CameraErrorBoundary
@@ -87,44 +146,15 @@ export default function CapturePage() {
             </CameraErrorBoundary>
           </div>
 
-        {/* Success Result Display */}
+        {/* Nutrition Facts Display */}
         {captureResult?.success && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-            <div className="flex items-start gap-3">
-              <CheckCircle className="w-6 h-6 text-green-600 mt-0.5" />
-              <div className="flex-1">
-                <h3 className="font-semibold text-green-900 mb-2">Product Found!</h3>
-                <div className="space-y-2">
-                  <p className="text-green-800">
-                    <span className="font-medium">{captureResult.product.name}</span>
-                    {captureResult.product.brand && (
-                      <span className="text-green-600"> by {captureResult.product.brand}</span>
-                    )}
-                  </p>
-                  <div className="text-sm text-green-700">
-                    Quality: <span className="font-medium capitalize">{captureResult.product.quality.level}</span>
-                    {' '}({captureResult.product.quality.score}/100)
-                  </div>
-                  {captureResult.product.quality.issues.length > 0 && (
-                    <div className="text-sm text-green-600">
-                      Note: {captureResult.product.quality.issues.join(', ')}
-                    </div>
-                  )}
-                </div>
-                <div className="flex gap-2 mt-4">
-                  <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                    Add to Meal
-                  </button>
-                  <button
-                    onClick={resetCapture}
-                    className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                  >
-                    Scan Another
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+          <NutritionFactsCard
+            product={captureResult.product}
+            onConfirm={handleNutritionConfirm}
+            onEdit={handleEditDetails}
+            onScanAnother={resetCapture}
+            className="mb-6"
+          />
         )}
 
         {/* Feature Preview - Show upcoming capabilities */}
@@ -209,6 +239,16 @@ export default function CapturePage() {
             </div>
           </div>
         </div>
+
+        {/* Meal Selection Modal */}
+        {pendingProduct && (
+          <MealSelectionModal
+            product={pendingProduct}
+            isOpen={showMealModal}
+            onClose={() => setShowMealModal(false)}
+            onConfirm={handleMealConfirm}
+          />
+        )}
       </div>
       </div>
     </CaptureErrorBoundary>

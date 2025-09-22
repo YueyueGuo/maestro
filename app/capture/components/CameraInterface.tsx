@@ -83,6 +83,7 @@ export default function CameraInterface({
    * Handle mode selection
    */
   const handleModeSelect = (mode: 'nutrition-label' | 'ai-analysis' | 'manual') => {
+    capture.clearResult() // Clear any existing messages
     capture.switchMode(mode)
     setShowInstructions(false)
   }
@@ -236,9 +237,11 @@ export default function CameraInterface({
         {capture.showModeSelection && (
           <div className="space-y-3">
             <div className="text-center text-white mb-4">
-              <p className="text-lg font-medium mb-2">No barcode detected</p>
+              <p className="text-lg font-medium mb-2">
+                {capture.lookupResult?.success === false ? 'Product Not Found' : 'No barcode detected'}
+              </p>
               <p className="text-sm text-gray-300">
-                Choose how to analyze your food:
+                Choose an alternative method to log your food:
               </p>
             </div>
 
@@ -274,7 +277,10 @@ export default function CameraInterface({
 
             {/* Try barcode again */}
             <button
-              onClick={capture.retryCapture}
+              onClick={() => {
+                capture.clearResult() // Clear messages before retry
+                capture.retryCapture()
+              }}
               className="w-full p-3 bg-blue-600 hover:bg-blue-700 rounded-lg text-white text-sm font-medium transition-colors flex items-center justify-center"
             >
               <Scan className="w-4 h-4 mr-2" />
@@ -284,9 +290,9 @@ export default function CameraInterface({
         )}
       </div>
 
-      {/* Success/Error Messages */}
+      {/* Success/Error Messages - Positioned to not block scan area */}
       {capture.lookupResult && (
-        <div className="absolute top-1/2 left-4 right-4 transform -translate-y-1/2">
+        <div className="absolute bottom-20 left-4 right-4">
           {capture.lookupResult.success ? (
             <div className="bg-green-600 text-white p-4 rounded-lg text-center">
               <p className="font-medium">Product Found!</p>
@@ -299,6 +305,9 @@ export default function CameraInterface({
               <p className="font-medium">Product Not Found</p>
               <p className="text-sm text-red-100 mt-1">
                 {capture.lookupResult.error}
+              </p>
+              <p className="text-xs text-red-200 mt-2">
+                Try different angles, better lighting, or use the options below
               </p>
             </div>
           )}
