@@ -143,6 +143,94 @@ export const SAMPLE_BARCODES = [
   '049000028270'  // Pringles
 ]
 
+/**
+ * Standard barcode dataset for testing
+ * These are real barcodes that should be available in Open Food Facts
+ */
+export const STANDARD_TEST_BARCODES = {
+  // High-quality products (should have complete data)
+  COCA_COLA: '049000028911',
+  NUTELLA: '3017620425035',
+  PEPSI: '012000005084',
+  KRAFT_MAC_CHEESE: '021000020386',
+
+  // Medium-quality products (some data missing)
+  STORE_BRAND_WATER: '041415084094',
+  GENERIC_CRACKERS: '041303002926',
+
+  // Low-quality products (minimal data)
+  PRODUCE_PLU: '4011', // Bananas PLU code
+
+  // Invalid/test barcodes
+  INVALID: '123456789012',
+  MALFORMED: '12345',
+  NON_EXISTENT: '999999999999'
+}
+
+/**
+ * Quality scoring test cases for Open Food Facts data
+ */
+export const QUALITY_TEST_CASES = {
+  high_quality: {
+    name: 'Coca-Cola Classic',
+    brand: 'The Coca-Cola Company',
+    barcode: '049000028911',
+    nutrition: {
+      calories: 42,
+      carbs: 10.6,
+      fat: 0,
+      protein: 0,
+      fiber: 0
+    },
+    imageUrl: 'https://example.com/coke.jpg',
+    verified: true,
+    expectedScore: 100
+  },
+  medium_quality: {
+    name: 'Store Brand Soda',
+    brand: 'Generic Brand',
+    barcode: '012345678901',
+    nutrition: {
+      calories: 40,
+      carbs: 10,
+      fat: 0,
+      protein: 0,
+      fiber: 0
+    },
+    verified: false,
+    expectedScore: 70
+  },
+  low_quality: {
+    name: 'Unknown Product',
+    barcode: '999999999999',
+    nutrition: {
+      calories: 0,
+      carbs: 0,
+      fat: 0,
+      protein: 0,
+      fiber: 0
+    },
+    verified: false,
+    expectedScore: 20
+  }
+}
+
+/**
+ * Performance test scenarios
+ */
+export const PERFORMANCE_TEST_SCENARIOS = {
+  // Network conditions
+  fast_network: { delay: 200, errorRate: 0.01 },
+  slow_network: { delay: 2000, errorRate: 0.05 },
+  poor_network: { delay: 5000, errorRate: 0.15 },
+  offline: { delay: 0, errorRate: 1.0 },
+
+  // Device performance profiles
+  high_end_device: { scanInterval: 400, maxMemory: 200 },
+  mid_range_device: { scanInterval: 600, maxMemory: 150 },
+  low_end_device: { scanInterval: 800, maxMemory: 100 }
+}
+
 export const MOCK_API_RESPONSES = {
   barcodeSuccess: {
     name: 'Mock Product',
